@@ -6,6 +6,7 @@ var cheerio = require('cheerio');
 var request = require('request');
 var app = express();
 var layout = require('express-ejs-layouts');
+var port = process.env.PORT || 1337;
 
 app.set('view engine', 'ejs');
 app.set('layout', 'layout');
@@ -236,7 +237,7 @@ app.post('/stop', function(req, res){
     res.redirect('/');
 });
 
-app.listen(3000, function () {
+app.listen(port, function () {
     console.log('Example app listening on port 3000!');
 });
 
