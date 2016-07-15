@@ -6,8 +6,8 @@ var cheerio = require('cheerio');
 var request = require('request');
 var app = express();
 var layout = require('express-ejs-layouts');
-var port = process.env.PORT || 1337;
 
+app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'ejs');
 app.set('layout', 'layout');
 app.use(layout);
@@ -237,8 +237,8 @@ app.post('/stop', function(req, res){
     res.redirect('/');
 });
 
-app.listen(port, function () {
-    console.log('Example app listening on port 3000!');
+app.listen(app.get('port'), function () {
+    console.log('Example app listening on port ' + app.get('port'));
 });
 
 //process.on('SIGINT', function() {
