@@ -1,0 +1,136 @@
+<% function displayName(user) { %>
+<% return user[0] + user[1] + "******" + user[user.length - 2] + user[user.length - 1] %>
+<% } %>
+
+<div class="row">
+    <div class="col-md-8">
+
+        <% if (Object.keys(database).length) { %>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Логин</th>
+                <th style="text-align: center; width: 100px;">Статус</th>
+                <th style="text-align: center; width: 120px;">Steam Guard</th>
+                <th style="text-align: center; width: 100px;">Подключение</th>
+                <th style="text-align: center; width: 100px;">Действие</th>
+                <th style="text-align: center; width: 100px;">Удаление</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <% var count = 1; %>
+            <% Object.keys(database).forEach(function(username) { %>
+            <tr>
+                <td style="vertical-align: middle;"><%= count %></td>
+                <td style="vertical-align: middle;"><%= displayName(username) %></td>
+                <td style="vertical-align: middle; text-align: center;"><h5>
+                    <% if (database[username].status == 0) { %>
+                    <span class="label label-danger">офлайн</span>
+                    <% } %>
+                    <% if (database[username].status == 1) { %>
+                    <span class="label label-success">онлайн</span>
+                    <% } %>
+                </h5></td>
+                <td style="vertical-align: middle; text-align: center;">
+                    <% if (database[username].guard == 0) { %>
+                    <h5><span class="label label-default">неизвестно</span></h5>
+                    <% } %>
+                    <% if (database[username].guard == 1) { %>
+                    <form action="/code" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <input type="text" class="form-control input-sm" placeholder="Введите код..." name="code">
+                    </form>
+                    <% } %>
+                    <% if (database[username].guard == 2) { %>
+                    <h5><span class="label label-success">авторизован</span></h5>
+                    <% } %>
+                </td>
+                <td style="vertical-align: middle;">
+                    <% if (database[username].status == 0) { %>
+                    <form action="/login" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <button type="submit" class="btn btn-sm btn-default btn-block">Подключить</button>
+                    </form>
+                    <% }%>
+                    <% if (database[username].status == 1) { %>
+                    <form action="/logout" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <button type="submit" class="btn btn-sm btn-default btn-block">Остановить</button>
+                    </form>
+                    <% }%>
+                </td>
+                <td style="vertical-align: middle;">
+                    <% if (database[username].work == 0) { %>
+                    <form action="/start" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <button type="submit" class="btn btn-sm btn-default btn-block" <% if (database[username].status == 0) { %>disabled="disabled"<% } %> >Запустить</button>
+                    </form>
+                    <% }%>
+                    <% if (database[username].work == 1) { %>
+                    <form action="/stop" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <button type="submit" class="btn btn-sm btn-default btn-block">Остановить</button>
+                    </form>
+                    <% }%>
+                </td>
+                <td style="vertical-align: middle;">
+                    <form action="/remove" method="post">
+                        <input type="hidden" name="username" value="<%= username %>">
+                        <button type="submit" class="btn btn-sm btn-default btn-block">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            <% count++ %>
+            <% }) %>
+
+            </tbody>
+        </table>
+        <% } else { %>
+        <p>Пусто</p>
+        <% } %>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Добавить пользователя</h3>
+            </div>
+            <div class="panel-body">
+                <form action="/add" method="post">
+                    <div class="form-group">
+                        <label for="user">Логин</label>
+                        <input id="user" type="text" class="form-control" placeholder="Логин..." name="username" value="" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pass">Пароль</label>
+                        <input id="pass" type="text" class="form-control" placeholder="Пароль..." name="password" value="" required>
+                    </div>
+
+                    <button class="btn btn-default btn-primary btn-block" type="submit">Добавить</button>
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Информация о карточках</h3>
+            </div>
+            <div class="panel-body">
+                <% Object.keys(database).forEach(function(username) { %>
+                <% if (database[username].currentGame !== 0) { %>
+
+                <% var current_user = database[username].games.filter(function(v) { return v.id == database[username].currentGame; })
+                if (current_user[0] !== undefined) {
+                %>
+
+                <h4><%= username %></h4>
+                Сейчас в <b><%= current_user[0].title %></b> (<i>~<%= current_user[0].remaining %> шт.</i>)
+
+                <% } %>
+                <% } %>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>

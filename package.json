@@ -1,0 +1,26 @@
+{
+  "name": "steam_farmer",
+  "version": "1.0.0",
+  "description": "Automatic steam cards idler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "steam",
+    "cards",
+    "idler",
+    "farmer"
+  ],
+  "author": "Andrey Volkov (@dew01ke)",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cheerio": "^0.20.0",
+    "express": "^4.14.0",
+    "express-ejs-layouts": "^2.2.0",
+    "fs": "0.0.2",
+    "request": "^2.73.0",
+    "steam-user": "^3.10.0"
+  }
+}
