@@ -124,7 +124,7 @@
                 if (current_user[0] !== undefined) {
                 %>
 
-                <h4><%= username %></h4>
+                <h4><%= displayName(username) %></h4>
                 Сейчас в <b><%= current_user[0].title %></b> (<i>~<%= current_user[0].remaining %> шт.</i>)
 
                 <% } %>
