@@ -4,8 +4,8 @@
 
 <div class="row">
     <div class="col-md-8">
-
         <% if (Object.keys(database).length) { %>
+        <h2>Пользователи</h2>
         <table class="table table-striped">
             <thead>
             <tr>
@@ -23,7 +23,7 @@
             <% var count = 1; %>
             <% Object.keys(database).forEach(function(username) { %>
             <tr>
-                <td style="vertical-align: middle;"><%= count %></td>
+                <td scope="row" style="vertical-align: middle;"><%= count %></td>
                 <td style="vertical-align: middle;"><%= displayName(username) %></td>
                 <td style="vertical-align: middle; text-align: center;"><h5>
                     <% if (database[username].status == 0) { %>
@@ -90,6 +90,41 @@
         <% } else { %>
         <p>Пусто</p>
         <% } %>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Статистика</h2>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th>Текущая игра</th>
+                        <th>Осталось</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% Object.keys(database).forEach(function(username) { %>
+                    <% if (database[username].currentGame !== 0) { %>
+                    <% var current_user = database[username].games.filter(function(v) { return v.id == database[username].currentGame; })
+                        if (current_user[0] !== undefined) {
+                    %>
+
+                    <tr>
+                        <td><%= displayName(username) %></td>
+                        <td><%= current_user[0].title %></td>
+                        <td><%= current_user[0].remaining %></td>
+                    </tr>
+
+                    <%  } %>
+                    <% } %>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                {additional control}
+            </div>
+        </div>
     </div>
     <div class="col-md-4">
         <div class="panel panel-primary">
@@ -112,25 +147,6 @@
                 </form>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Информация о карточках</h3>
-            </div>
-            <div class="panel-body">
-                <% Object.keys(database).forEach(function(username) { %>
-                <% if (database[username].currentGame !== 0) { %>
-
-                <% var current_user = database[username].games.filter(function(v) { return v.id == database[username].currentGame; })
-                if (current_user[0] !== undefined) {
-                %>
-
-                <h4><%= displayName(username) %></h4>
-                Сейчас в <b><%= current_user[0].title %></b> (<i>~<%= current_user[0].remaining %> шт.</i>)
-
-                <% } %>
-                <% } %>
-                <% }) %>
-            </div>
-        </div>
     </div>
 </div>
+

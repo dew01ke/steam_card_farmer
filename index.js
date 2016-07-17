@@ -58,6 +58,17 @@ app.post('/add', function(req, res){
         db[_username_].client.logOff();
     });
 
+    db[_username_].client.on('disconnected', function(eresult, msg) {
+        console.log(_username_ + ": disconnected with " + msg + " (" + eresult + ")");
+
+        db[_username_].idler = function() {};
+
+        db[_username_].currentGame = 0;
+        db[_username_].work = 0;
+        db[_username_].guard = 0;
+        db[_username_].status = 0;
+    });
+
     db[_username_].client.on('sentry', function(sentry) {
         var format = "sentry." + _username_ + ".hash";
         fs.writeFileSync(format, sentry);
@@ -197,24 +208,25 @@ app.post('/start', function(req, res){
     db[_username_].idler = function(min) {
         if (Object.keys(db[_username_].games).length > 0) {
 
-            //var sorted = db[_username_].games.sort(function(a, b) {
-            //    return a['remaining'] - b['remaining'];
-            //});
-
             db[_username_].work = 1;
 
             setTimeout(function () {
-                var current_game = db[_username_].games[0]['id'];
-                //var current_game = sorted[0]['id'];
+                var currentGame = db[_username_].games[0]['id'];
+                var remainingCards = db[_username_].games[0]['remaining'];
+                var checkTime = 35;
 
-                console.log(_username_ + ": processing game #" + current_game);
+                console.log(_username_ + ": processing game #" + currentGame);
 
-                db[_username_].currentGame = current_game;
-                db[_username_].client.gamesPlayed(parseInt(current_game, 10));
+                db[_username_].currentGame = currentGame;
+                db[_username_].client.gamesPlayed(parseInt(currentGame, 10));
 
                 db[_username_].client.webLogOn();
 
-                db[_username_].idler(10);
+                if (remainingCards == 1) checkTime = 10;
+                if (remainingCards >= 3) checkTime = 20;
+                if (remainingCards >= 5) checkTime = 40;
+
+                db[_username_].idler(checkTime);
             }, min * 60 * 1000);
         } else {
             db[_username_].idler = function() {};
@@ -222,7 +234,7 @@ app.post('/start', function(req, res){
             db[_username_].currentGame = 0;
         }
     };
-    db[_username_].idler(0.1);
+    db[_username_].idler(0.01);
 
     res.redirect('/');
 });
