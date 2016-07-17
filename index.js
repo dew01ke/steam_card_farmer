@@ -42,7 +42,7 @@ app.post('/add', function(req, res){
     });
 
     if (fs.existsSync("sentry." + _username_ + ".hash")) {
-        console.log("Attaching sentry file named as " + "sentry." + _username_ + ".hash");
+        //console.log("Attaching sentry file named as " + "sentry." + _username_ + ".hash");
         var sentry_hash = fs.readFileSync("sentry." + _username_ + ".hash");
         db[_username_].client.setSentry(sentry_hash);
     }
@@ -54,12 +54,12 @@ app.post('/add', function(req, res){
     });
 
     db[_username_].client.on('error', function(e) {
-        console.log("User error: " + e);
+        //console.log("User error: " + e);
         db[_username_].client.logOff();
     });
 
     db[_username_].client.on('disconnected', function(eresult, msg) {
-        console.log(_username_ + ": disconnected with " + msg + " (" + eresult + ")");
+        //console.log(_username_ + ": disconnected with " + msg + " (" + eresult + ")");
 
         db[_username_].idler = function() {};
 
@@ -72,11 +72,11 @@ app.post('/add', function(req, res){
     db[_username_].client.on('sentry', function(sentry) {
         var format = "sentry." + _username_ + ".hash";
         fs.writeFileSync(format, sentry);
-        console.log("We got sentry, file successfully saved!");
+        //console.log("We got sentry, file successfully saved!");
     });
 
     db[_username_].client.on('loggedOn', function() {
-        console.log("Logged onto Steam as " + db[_username_].client.steamID.getSteamID64());
+        //console.log("Logged onto Steam as " + db[_username_].client.steamID.getSteamID64());
         db[_username_].client.setPersona(SteamUser.EPersonaState.LookingToTrade);
 
         db[_username_].status = 1;
@@ -85,22 +85,22 @@ app.post('/add', function(req, res){
 
     db[_username_].client.on('steamGuard', function(domain, callback, lastCodeWrong) {
         if (db[_username_].guard == 0) {
-            console.log("Need user action!");
+            //console.log("Need user action!");
             db[_username_].guard = 1;
         } else {
             if (db[_username_] != '') {
-                console.log("Trying to send steam guard code " + db[_username_].guard_code);
+                //console.log("Trying to send steam guard code " + db[_username_].guard_code);
                 lastCodeWrong = true;
                 callback(db[_username_].guard_code);
             } else {
-                console.log("Critical error! Code is null!");
+                //console.log("Critical error! Code is null!");
             }
 
         }
     });
 
     db[_username_].client.on('friendMessage', function(senderID, message) {
-        console.log("[Message from " + senderID + "]: " + message + " [my: " + db[_username_].client.steamID.getSteamID64() + "]");
+        //console.log("[Message from " + senderID + "]: " + message + " [my: " + db[_username_].client.steamID.getSteamID64() + "]");
     });
 
     db[_username_].client.on('webSession', function(sessionID, cookies) {
@@ -112,7 +112,7 @@ app.post('/add', function(req, res){
 
         req.get("http://steamcommunity.com/my/badges/?sort=p", function(err, response, body) {
             if (err || response.statusCode != 200) {
-                console.log("Couldn't request badge page");
+                //console.log("Couldn't request badge page");
                 return;
             }
 
@@ -135,7 +135,7 @@ app.post('/add', function(req, res){
                 }
             });
 
-            console.log(_username_ + ': card information updated!');
+            //console.log(_username_ + ': card information updated!');
         });
     });
 
@@ -146,7 +146,7 @@ app.post('/code', function(req, res){
     var _username_ = req.body.username;
     var _code_ = req.body.code;
 
-    console.log("Accepting code from user = " + _code_);
+    //console.log("Accepting code from user = " + _code_);
 
     //set code
     db[_username_].guard_code = _code_;
@@ -195,7 +195,7 @@ app.post('/logout', function(req, res){
     db[_username_].guard = 0;
 
     db[_username_].client.logOff();
-    console.log(_username_ + " logout");
+    //console.log(_username_ + " logout");
 
     res.redirect('/');
 });
@@ -203,7 +203,7 @@ app.post('/logout', function(req, res){
 app.post('/start', function(req, res){
     var _username_ = req.body.username;
 
-    console.log(_username_ + ": idle process has been started");
+    ////console.log(_username_ + ": idle process has been started");
 
     db[_username_].idler = function(min) {
         if (Object.keys(db[_username_].games).length > 0) {
@@ -213,16 +213,16 @@ app.post('/start', function(req, res){
             setTimeout(function () {
                 var currentGame = db[_username_].games[0]['id'];
                 var remainingCards = db[_username_].games[0]['remaining'];
-                var checkTime = 35;
+                var checkTime = 5;
 
-                console.log(_username_ + ": processing game #" + currentGame);
+                ////console.log(_username_ + ": processing game #" + currentGame);
 
                 db[_username_].currentGame = currentGame;
                 db[_username_].client.gamesPlayed(parseInt(currentGame, 10));
 
                 db[_username_].client.webLogOn();
 
-                if (remainingCards == 1) checkTime = 10;
+                if (remainingCards >= 1) checkTime = 10;
                 if (remainingCards >= 3) checkTime = 20;
                 if (remainingCards >= 5) checkTime = 40;
 
@@ -242,8 +242,9 @@ app.post('/start', function(req, res){
 app.post('/stop', function(req, res){
     var _username_ = req.body.username;
 
-    console.log(_username_ + ": idle process stopped");
+    //console.log(_username_ + ": idle process stopped");
     db[_username_].work = 0;
+    db[_username_].currentGame = 0;
     db[_username_].idler = function() {};
 
     res.redirect('/');
@@ -254,5 +255,5 @@ app.listen(app.get('port'), function () {
 });
 
 //process.on('SIGINT', function() {
-//    console.log("Logging off and shutting down");
+// console.log("Logging off and shutting down");
 //});

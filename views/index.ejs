@@ -90,41 +90,6 @@
         <% } else { %>
         <p>Пусто</p>
         <% } %>
-
-        <div class="row">
-            <div class="col-md-6">
-                <h2>Статистика</h2>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Логин</th>
-                        <th>Текущая игра</th>
-                        <th>Осталось</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% Object.keys(database).forEach(function(username) { %>
-                    <% if (database[username].currentGame !== 0) { %>
-                    <% var current_user = database[username].games.filter(function(v) { return v.id == database[username].currentGame; })
-                        if (current_user[0] !== undefined) {
-                    %>
-
-                    <tr>
-                        <td><%= displayName(username) %></td>
-                        <td><%= current_user[0].title %></td>
-                        <td><%= current_user[0].remaining %></td>
-                    </tr>
-
-                    <%  } %>
-                    <% } %>
-                    <% }) %>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                {additional control}
-            </div>
-        </div>
     </div>
     <div class="col-md-4">
         <div class="panel panel-primary">
@@ -147,6 +112,34 @@
                 </form>
             </div>
         </div>
+
+        <h2>Статистика</h2>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Логин</th>
+                <th>Текущая игра</th>
+                <th>Осталось</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% Object.keys(database).forEach(function(username) { %>
+            <% if (database[username].currentGame !== 0) { %>
+            <% var current_user = database[username].games.filter(function(v) { return v.id == database[username].currentGame; })
+            if (current_user[0] !== undefined) {
+            %>
+
+            <tr>
+                <td><%= displayName(username) %></td>
+                <td><%= current_user[0].title %></td>
+                <td><%= current_user[0].remaining %></td>
+            </tr>
+
+            <%  } %>
+            <% } %>
+            <% }) %>
+            </tbody>
+        </table>
     </div>
 </div>
 
